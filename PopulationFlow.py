@@ -6,6 +6,9 @@
 import pandas as pd
 from pandas import DataFrame, Series
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+get_ipython().magic(u'matplotlib')
 
 # Make sure the encoding is utf-8
 import sys
@@ -69,41 +72,27 @@ flowData2011['Value'] = flowData2011['Value'].convert_objects(convert_numeric=Tr
 
 # In[78]:
 
-# Remove all the non-census areas as a first-pass
+# Remove all the non-census areas so we can geocode the cities that qualify as CMAs
 flowData2011_cma = flowData2011[~flowData2011['Destination'].str.contains('Non-census')]
 flowData2011_cma = flowData2011_cma[~flowData2011_cma['Origin'].str.contains('Non-census')]
 flowData2011_cma.head()
 
 
-# In[79]:
+# In[90]:
 
-inMig = flowData2011_cma[flowData2011_cma['MIGMOVE'] == "In-migration"].drop('MIGMOVE', axis=1).reset_index(drop=True)
 outMig = flowData2011_cma[flowData2011_cma['MIGMOVE'] == "Out-migration"].drop('MIGMOVE', axis=1).reset_index(drop=True)
-inMig.head()
+outMig.head()
 
 
-# In[84]:
+# In[91]:
 
 outMigPiv = outMig.pivot('Origin', 'Destination', 'Value')
-inMigPiv = inMig.pivot('Origin', 'Destination', 'Value')
 outMigPiv.head()
 
 
-# In[87]:
-
-import matplotlib.pyplot as plt
-import seaborn as sns
-get_ipython().magic(u'matplotlib inline')
-
-
-# In[88]:
+# In[93]:
 
 sns.heatmap(outMigPiv)
-
-
-# In[89]:
-
-sns.heatmap(inMigPiv)
 
 
 # In[ ]:
