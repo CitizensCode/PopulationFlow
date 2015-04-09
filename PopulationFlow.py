@@ -8,7 +8,7 @@ from pandas import DataFrame, Series
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-get_ipython().magic(u'matplotlib')
+get_ipython().magic(u'matplotlib inline')
 
 # Make sure the encoding is utf-8
 import sys
@@ -102,9 +102,49 @@ outMigPivLog = outMigPiv.applymap(log_scale).replace([np.inf, -np.inf], 0)
 sns.heatmap(outMigPivLog)
 
 
-# In[ ]:
+# **Source:** [Geocoder.ca](http://geocoder.ca/?freedata=1)
 
-sns.clustermap(outMigPivLog)
+# In[45]:
+
+# Get mapping of cities to centroids
+centroids = pd.read_csv('./canada_cities.csv', header=None, names=['Location', 'Province', 'Latitude', 'Longitude'])
+
+
+# In[46]:
+
+from titlecase import titlecase
+title_u = lambda x: u(x).title()
+
+
+# In[47]:
+
+centroids['Location'] = centroids['Location'].map(title_u)
+centroids.head(15)
+
+
+# In[51]:
+
+provAbbr = {'BC' : 'British Columbia',
+           'SK' : 'Saskatchewan',
+           'QC' : 'Quebec',
+           'AB' : 'Alberta',
+           'NB' : 'New Brunswick',
+           'NS' : 'Nova Scotia',
+           'ON' : 'Ontario',
+           'NL' : 'Newfoundland',
+           'PE' : 'PEI',
+           'MB' : 'Manitoba',
+           'NT' : 'Northwest Territories',
+           'YT' : 'Yukon',
+           'NU' : 'Nunavut'}
+centroids['Province'] = centroids['Province'].replace(provAbbr)
+centroids.head()
+
+
+# In[55]:
+
+centroids = centroids.drop_duplicates(subset=['Location', 'Province'])
+centroids.head()
 
 
 # In[ ]:
