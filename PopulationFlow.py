@@ -48,50 +48,62 @@ flowData = flowData.drop(dropCols, axis=1)
 flowData.head(10)
 
 
-# In[65]:
+# In[75]:
+
+# Rename columns
+flowData = flowData.rename(columns={"GEO": "Origin", "GEODEST": "Destination"})
+
+
+# In[76]:
 
 # Filter for only the most recent data
 flowData2011 = flowData[flowData['Ref_Date'] == 2011].drop('Ref_Date', axis=1).reset_index(drop=True)
 flowData2011.head()
 
 
-# In[66]:
+# In[77]:
 
 # Convert that Value column to a numeric data type
 flowData2011['Value'] = flowData2011['Value'].convert_objects(convert_numeric=True)
 
 
-# In[67]:
+# In[78]:
 
 # Remove all the non-census areas as a first-pass
-flowData2011_cma = flowData2011[~flowData2011['GEODEST'].str.contains('Non-census')]
-flowData2011_cma = flowData2011_cma[~flowData2011_cma['GEO'].str.contains('Non-census')]
+flowData2011_cma = flowData2011[~flowData2011['Destination'].str.contains('Non-census')]
+flowData2011_cma = flowData2011_cma[~flowData2011_cma['Origin'].str.contains('Non-census')]
 flowData2011_cma.head()
 
 
-# In[68]:
+# In[79]:
 
 inMig = flowData2011_cma[flowData2011_cma['MIGMOVE'] == "In-migration"].drop('MIGMOVE', axis=1).reset_index(drop=True)
+outMig = flowData2011_cma[flowData2011_cma['MIGMOVE'] == "Out-migration"].drop('MIGMOVE', axis=1).reset_index(drop=True)
 inMig.head()
 
 
-# In[69]:
+# In[84]:
 
-outMig = flowData2011_cma[flowData2011_cma['MIGMOVE'] == "Out-migration"].drop('MIGMOVE', axis=1).reset_index(drop=True)
-outMig.head()
-
-
-# In[70]:
-
-outMigPiv = outMig.pivot('GEO', 'GEODEST', 'Value')
+outMigPiv = outMig.pivot('Origin', 'Destination', 'Value')
+inMigPiv = inMig.pivot('Origin', 'Destination', 'Value')
 outMigPiv.head()
 
 
-# In[50]:
+# In[87]:
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-get_ipython().magic(u'matplotlib')
+get_ipython().magic(u'matplotlib inline')
+
+
+# In[88]:
+
+sns.heatmap(outMigPiv)
+
+
+# In[89]:
+
+sns.heatmap(inMigPiv)
 
 
 # In[ ]:
